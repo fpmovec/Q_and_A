@@ -1,4 +1,4 @@
-import { QuestionData, AnswerData } from './QuestionsData';
+import { QuestionData } from './QuestionsData';
 
 export const questions: QuestionData[] = [
   {
