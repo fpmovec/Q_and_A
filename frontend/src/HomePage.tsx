@@ -1,9 +1,13 @@
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
 import React from 'react';
 import { QuestionList } from './QuestionComponents/QuestionsList';
 import { getUnansweredQuestions } from './MockData/QuestionsFunctions';
 import { QuestionData } from './MockData/QuestionsData';
 import { Page } from './Page/Page';
 import { PageTitle } from './Page/PageTitle';
+import { PrimaryButton } from './Styles';
+import { useNavigate } from 'react-router-dom';
 
 export const HomePage = () => {
   const [questions, setQuestions] = React.useState<QuestionData[]>([]);
@@ -17,15 +21,25 @@ export const HomePage = () => {
     doGetUnansweredQuestions();
   }, []);
 
+  const navigate = useNavigate();
+
   const handleAskQuestionClick = () => {
-    console.log('TODO - move to the ask page');
+    navigate('ask');
   };
 
   return (
     <Page>
-      <div>
+      <div
+        css={css`
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        `}
+      >
         <PageTitle>Unanswered Questions</PageTitle>
-        <button onClick={handleAskQuestionClick}>Ask a question</button>
+        <PrimaryButton onClick={handleAskQuestionClick}>
+          Ask a question
+        </PrimaryButton>
       </div>
       {questionsLoading ? (
         <div>Loading...</div>
