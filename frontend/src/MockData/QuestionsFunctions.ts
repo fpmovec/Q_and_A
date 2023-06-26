@@ -1,4 +1,4 @@
-import { QuestionData } from './QuestionsData';
+import { AnswerData, PostAnswersData, QuestionData } from './QuestionsData';
 import { questions } from './FakeQuestions';
 //import { resolve } from 'path';
 import { PostQuestionData } from './QuestionsData';
@@ -43,4 +43,21 @@ export const postQuestion = async (
   };
   questions.push(newQuestion);
   return newQuestion;
+};
+
+export const postAnswer = async (
+  answer: PostAnswersData,
+): Promise<AnswerData | undefined> => {
+  await wait(500);
+  const question = questions.filter(
+    (q) => q.questionId === answer.questionId,
+  )[0];
+
+  const answerInQuestion: AnswerData = {
+    answerId: 99,
+    ...answer,
+  };
+  question.answers.push(answerInQuestion);
+  console.log(question.answers);
+  return answerInQuestion;
 };

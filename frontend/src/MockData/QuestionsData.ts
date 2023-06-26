@@ -20,3 +20,10 @@ export interface PostQuestionData {
   userName: string;
   created: Date;
 }
+
+export interface PostAnswersData {
+  questionId: number;
+  content: string;
+  userName: string;
+  created: Date;
+}
