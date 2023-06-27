@@ -3,7 +3,6 @@ import { css } from '@emotion/react';
 import React from 'react';
 import { Page } from '../Page/Page';
 import { useParams } from 'react-router-dom';
-import { QuestionData } from '../MockData/QuestionsData';
 import { getQuestion, postAnswer } from '../MockData/QuestionsFunctions';
 import styles from './QuestionPage.module.css';
 import {
@@ -19,13 +18,17 @@ import {
 } from '../Styles';
 import { AnswerList } from '../AnswerComponents/AnswerList';
 import { useForm } from 'react-hook-form';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { gotQuestionAction, gettingQuestionAction } from '../Redux/Actions';
+import { AppState } from '../Redux/StoreModels';
 type FormData = {
   content: string;
 };
 
 export const QuestionPage = () => {
-  const [question, setQuestion] = React.useState<QuestionData | null>(null);
+  const dispatch = useDispatch();
+  const question = useSelector((state: AppState) => state.questions.viewing);
+
   const [succesfullySubmitted, setSuccesfullySubmitted] = React.useState(false);
   const { questionId } = useParams();
   const {
@@ -49,12 +52,14 @@ export const QuestionPage = () => {
 
   React.useEffect(() => {
     const doGetQuestion = async (questionId: number) => {
+      dispatch(gettingQuestionAction());
       const foundQuestion = await getQuestion(questionId);
-      setQuestion(foundQuestion);
+      dispatch(gotQuestionAction(foundQuestion));
     };
     if (questionId) {
       doGetQuestion(Number(questionId));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questionId]);
   return (
     <Page>

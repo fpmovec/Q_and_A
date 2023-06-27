@@ -5,18 +5,28 @@ import { Page } from '../Page/Page';
 import { useSearchParams } from 'react-router-dom';
 import { QuestionList } from '../QuestionComponents/QuestionsList';
 import { searchQuestions } from '../MockData/QuestionsFunctions';
-import { QuestionData } from '../MockData/QuestionsData';
+//import { QuestionData } from '../MockData/QuestionsData';
+import { AppState } from '../Redux/StoreModels';
+import {
+  searchingQuestionAction,
+  searchedQuestionsAction,
+} from '../Redux/Actions';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 export const SearchPage = () => {
+  const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
-  const [questions, setQuestions] = React.useState<QuestionData[]>([]);
+  const questions = useSelector((state: AppState) => state.questions.searched);
   const search = searchParams.get('criteria') || '';
   React.useEffect(() => {
     const doSearch = async (criteria: string) => {
+      dispatch(searchingQuestionAction());
       const foundResults = await searchQuestions(criteria);
-      setQuestions(foundResults);
+      dispatch(searchedQuestionsAction(foundResults));
     };
     doSearch(search);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
   return (
     <Page title="Search Results">
