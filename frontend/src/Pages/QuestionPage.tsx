@@ -18,16 +18,16 @@ import {
 } from '../Styles';
 import { AnswerList } from '../AnswerComponents/AnswerList';
 import { useForm } from 'react-hook-form';
-import { useSelector, useDispatch } from 'react-redux';
-import { gotQuestionAction, gettingQuestionAction } from '../Redux/Actions';
-import { AppState } from '../Redux/StoreModels';
+import { useAppDispatch, useAppSelector } from '../Redux/Hooks';
+import { gettingQuestion, gotQuestion } from '../Redux/Reducers';
+
 type FormData = {
   content: string;
 };
 
 export const QuestionPage = () => {
-  const dispatch = useDispatch();
-  const question = useSelector((state: AppState) => state.questions.viewing);
+  const dispatch = useAppDispatch();
+  const question = useAppSelector((state) => state.questions.viewing);
 
   const [succesfullySubmitted, setSuccesfullySubmitted] = React.useState(false);
   const { questionId } = useParams();
@@ -52,9 +52,9 @@ export const QuestionPage = () => {
 
   React.useEffect(() => {
     const doGetQuestion = async (questionId: number) => {
-      dispatch(gettingQuestionAction());
+      dispatch(gettingQuestion());
       const foundQuestion = await getQuestion(questionId);
-      dispatch(gotQuestionAction(foundQuestion));
+      dispatch(gotQuestion(foundQuestion));
     };
     if (questionId) {
       doGetQuestion(Number(questionId));

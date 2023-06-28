@@ -1,13 +1,13 @@
-import { Store, combineReducers } from 'redux';
 import { configureStore } from '@reduxjs/toolkit';
-import { AppState } from './StoreModels';
-import { questionsReducer } from './Reducers';
+import questionsReducer from './Reducers';
 
-const rootReducer = combineReducers<AppState>({
-  questions: questionsReducer,
+const store = configureStore({
+  reducer: {
+    questions: questionsReducer,
+  },
 });
 
-export function configStore(): Store<AppState> {
-  const store = configureStore({ reducer: rootReducer });
-  return store;
-}
+export default store;
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

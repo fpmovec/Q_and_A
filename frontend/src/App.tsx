@@ -11,10 +11,11 @@ import { SignInPage } from './Pages/SignInPage';
 import { NotFoundPage } from './Pages/NotFoundPage';
 import { QuestionPage } from './Pages/QuestionPage';
 import { Provider } from 'react-redux';
-import { configStore } from './Redux/Store';
+import store from './Redux/Store';
+//import { configStore } from './Redux/Store';
 
 const AskPage = React.lazy(() => import('./Pages/AskPage'));
-const store = configStore();
+//const store = configStore();
 function App() {
   return (
     <Provider store={store}>

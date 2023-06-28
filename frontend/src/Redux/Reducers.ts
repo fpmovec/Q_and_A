@@ -1,57 +1,46 @@
-import { QuestionsActions } from './Actions';
-import {
-  GETTINGQUESTION,
-  GETTINGUNANSWEREDQUESTIONS,
-  GOTQUESTION,
-  GOTUNANSWEREDQUESTIONS,
-  SEARCHEDQUESTIONS,
-  SEARCHINGQUESTIONS,
-} from './Constants';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { initialQuestionState } from './StoreModels';
+import { QuestionData } from '../MockData/QuestionsData';
 
-export const questionsReducer = (
-  state = initialQuestionState,
-  action: QuestionsActions,
-) => {
-  switch (action.type) {
-    case GETTINGUNANSWEREDQUESTIONS: {
-      return { ...state, loading: true };
-    }
-    case GOTUNANSWEREDQUESTIONS: {
-      return {
-        ...state,
-        loading: false,
-        unanswered: action.questions,
-      };
-    }
-    case GETTINGQUESTION: {
-      return {
-        ...state,
-        viewing: null,
-        loading: true,
-      };
-    }
-    case GOTQUESTION: {
-      return {
-        ...state,
-        viewing: action.question,
-        loading: false,
-      };
-    }
-    case SEARCHINGQUESTIONS: {
-      return {
-        ...state,
-        searched: [],
-        loading: true,
-      };
-    }
-    case SEARCHEDQUESTIONS: {
-      return {
-        ...state,
-        searched: action.questions,
-        loading: false,
-      };
-    }
-  }
-  return state;
-};
+const questionsSlice = createSlice({
+  name: 'questions',
+  initialState: initialQuestionState,
+  reducers: {
+    gettingUnansweredQuestions(state, action: PayloadAction<void>) {
+      state.loading = true;
+    },
+    gotUnansweredQuestions(state, action: PayloadAction<QuestionData[]>) {
+      state.loading = false;
+      state.unanswered = action.payload;
+    },
+
+    gettingQuestion(state, action: PayloadAction<void>) {
+      state.loading = true;
+      state.viewing = null;
+    },
+    gotQuestion(state, action: PayloadAction<QuestionData | null>) {
+      state.loading = false;
+      state.viewing = action.payload;
+    },
+
+    searchingQuestions(state, action: PayloadAction<void>) {
+      state.searched = [];
+      state.loading = true;
+    },
+    searchedQuestions(state, action: PayloadAction<QuestionData[]>) {
+      state.loading = false;
+      state.searched = action.payload;
+    },
+  },
+});
+
+export const {
+  gettingUnansweredQuestions,
+  gotUnansweredQuestions,
+  gettingQuestion,
+  gotQuestion,
+  searchingQuestions,
+  searchedQuestions,
+} = questionsSlice.actions;
+
+export default questionsSlice.reducer;

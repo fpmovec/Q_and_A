@@ -3,32 +3,27 @@ import { css } from '@emotion/react';
 import React from 'react';
 import { QuestionList } from './QuestionComponents/QuestionsList';
 import { getUnansweredQuestions } from './MockData/QuestionsFunctions';
-//import { QuestionData } from './MockData/QuestionsData';
 import { Page } from './Page/Page';
 import { PageTitle } from './Page/PageTitle';
 import { PrimaryButton } from './Styles';
 import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+
+import { useAppDispatch, useAppSelector } from './Redux/Hooks';
 import {
-  gettingUnansweredQuestionsAction,
-  gotUnansweredQuestionsAction,
-} from './Redux/Actions';
-import { AppState } from './Redux/StoreModels';
+  gettingUnansweredQuestions,
+  gotUnansweredQuestions,
+} from './Redux/Reducers';
 
 export const HomePage = () => {
-  const dispatch = useDispatch();
-  const questions = useSelector(
-    (state: AppState) => state.questions.unanswered,
-  );
-  const questionsLoading = useSelector(
-    (state: AppState) => state.questions.loading,
-  );
+  const dispatch = useAppDispatch();
+  const questions = useAppSelector((state) => state.questions.unanswered);
+  const questionsLoading = useAppSelector((state) => state.questions.loading);
 
   React.useEffect(() => {
     const doGetUnansweredQuestions = async () => {
-      dispatch(gettingUnansweredQuestionsAction());
+      dispatch(gettingUnansweredQuestions());
       const unansweredQuestions = await getUnansweredQuestions();
-      dispatch(gotUnansweredQuestionsAction(unansweredQuestions));
+      dispatch(gotUnansweredQuestions(unansweredQuestions));
     };
     doGetUnansweredQuestions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
