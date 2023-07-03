@@ -1,5 +1,9 @@
 using DbUp;
 using QandA.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using QandA.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = ConfigurationExtensions.GetConnectionString(builder.Configuration, "DefaultConnection");
@@ -21,9 +25,29 @@ if (upgrader.IsUpgradeRequired())
 
 builder.Services.AddScoped<IDataRepository, DataRepository>();
 builder.Services.AddControllers();
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<IQuestionCache, QuestionCache>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    //options.Authority = builder.Configuration.Get["Auth0:Authority"];
+    options.Authority = "https://dev-v4jqb57mv0ngbs43.us.auth0.com/";
+    options.Audience = "https://qanda";
+});
+builder.Services.AddHttpClient();
+builder.Services.AddAuthorization(options => 
+     options.AddPolicy("MustBeQuestionAuthor", policy => 
+     policy.Requirements
+     .Add(new MustBeQuestionAuthorRequirement())));
+builder.Services.AddScoped<IAuthorizationHandler, MustBeQuestionAuthorHandler>();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -38,7 +62,7 @@ else
    app.UseHttpsRedirection();
 }
 
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
