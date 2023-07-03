@@ -16,12 +16,20 @@ namespace QandA.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<QuestionGetManyResponse> GetQuestions(string search)
+        public IEnumerable<QuestionGetManyResponse> GetQuestions(string? search, bool includeAnswers)
         {
 
             if (string.IsNullOrEmpty(search))
             {
-                return _dataRepository.GetQuestions();
+                if (includeAnswers)
+                {
+                    return _dataRepository.GetQuestionsWithAnswers();
+                }
+                else
+                {
+                    return _dataRepository.GetQuestions();
+                }
+                
             }
             else
             {
@@ -32,7 +40,7 @@ namespace QandA.Controllers
         [HttpGet("unanswered")]
         public IEnumerable<QuestionGetManyResponse> GetUnansweredQuestions()
         {
-            return _dataRepository.GetUnanseredQuestions();
+            return _dataRepository.GetUnansweredQuestions();
         }
 
         [HttpGet("{questionId}")]
@@ -49,7 +57,14 @@ namespace QandA.Controllers
         [HttpPost]
         public ActionResult<QuestionGetSingleResponse> PostQuestion(QuestionPostRequest questionPostRequest)
         {
-            var savedQuestion = _dataRepository.PostQuestion(questionPostRequest);
+            var savedQuestion = _dataRepository.PostQuestion(new QuestionPostFullRequest
+            {
+                Title = questionPostRequest.Title,
+                Content = questionPostRequest.Content,
+                UserId = "1",
+                UserName = "bob.test@test.com",
+                Created = DateTime.UtcNow
+            });
             return CreatedAtAction(nameof(GetQuestion),
                 new { questionId = savedQuestion.QuestionId },
                 savedQuestion);
@@ -81,6 +96,24 @@ namespace QandA.Controllers
 
             _dataRepository.DeleteQuestion(questionId);
             return NoContent();
+        }
+
+        [HttpPost("{questionId}/answer")]
+        public ActionResult<AnswerGetResponse> PostAnswer(int questionId, AnswerPostRequest answerPostRequest)
+        {
+            var questionExists = _dataRepository.QuestionExists(answerPostRequest.QuestionId.Value);
+            if (!questionExists) 
+                return NotFound();
+
+            var savedAnswer = _dataRepository.PostAnswer(new AnswerPostFullRequest
+            {
+                QuestionId = answerPostRequest.QuestionId.Value,
+                Content = answerPostRequest.Content,
+                UserId = "1",
+                UserName = "bob.test@test.com",
+                Created = DateTime.UtcNow
+            });
+            return Ok(savedAnswer);
         }
     }
 }

@@ -5,16 +5,17 @@ namespace QandA.Data
     public interface IDataRepository
     {
         IEnumerable<QuestionGetManyResponse> GetQuestions();
+        IEnumerable<QuestionGetManyResponse> GetQuestionsWithAnswers();
         IEnumerable<QuestionGetManyResponse> GetQuestionsBySearch(string search);
-        IEnumerable<QuestionGetManyResponse> GetUnanseredQuestions();
+        IEnumerable<QuestionGetManyResponse> GetUnansweredQuestions();
         QuestionGetSingleResponse? GetQuestion(int questionId);
         bool QuestionExists(int questionId);
         AnswerGetResponse GetAnswer(int answerId);
 
 
-        QuestionGetSingleResponse? PostQuestion(QuestionPostRequest question);
+        QuestionGetSingleResponse? PostQuestion(QuestionPostFullRequest question);
         QuestionGetSingleResponse? PutQuestion(int questionId, QuestionPutRequest question);
         void DeleteQuestion(int questionId);
-        AnswerGetResponse PostAnswer(AnswerPostRequest answer);
+        AnswerGetResponse PostAnswer(AnswerPostFullRequest answer);
     }
 }
