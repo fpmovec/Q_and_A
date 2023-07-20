@@ -43,6 +43,8 @@ namespace QandA.Authorization
                 return;
             }
 
+
+
             context.Succeed(requirement);
         }
     }

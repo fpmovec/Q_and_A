@@ -48,6 +48,13 @@ builder.Services.AddAuthorization(options =>
      .Add(new MustBeQuestionAuthorRequirement())));
 builder.Services.AddScoped<IAuthorizationHandler, MustBeQuestionAuthorHandler>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddCors(options => 
+options.AddPolicy("CorsPolicy", builder => 
+builder.AllowAnyMethod()
+       .AllowAnyHeader()
+       .WithOrigins("http://localhost:3000")
+       .WithOrigins("https://resttesttest.com")
+));
 
 var app = builder.Build();
 
@@ -62,6 +69,8 @@ else
    app.UseHttpsRedirection();
 }
 
+app.UseRouting();
+app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
+using System.Net.Http;
+using System.Text.Json;
 using QandA.Data;
 using QandA.Models;
 
@@ -12,11 +16,17 @@ namespace QandA.Controllers
     {
         private readonly IDataRepository _dataRepository;
         private readonly IQuestionCache _questionCache;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly string? _auth0UserInfo;
 
-        public QuestionsController(IDataRepository dataRepository, IQuestionCache questionCache)
+        public QuestionsController(IDataRepository dataRepository,
+            IQuestionCache questionCache,
+            IHttpClientFactory httpClientFactory)
         {
             _dataRepository = dataRepository;
             _questionCache = questionCache;
+            _httpClientFactory = httpClientFactory;
+            _auth0UserInfo = $"https://dev-v4jqb57mv0ngbs43.us.auth0.com/userinfo";
         }
 
         [AllowAnonymous]
@@ -79,8 +89,8 @@ namespace QandA.Controllers
             {
                 Title = questionPostRequest.Title,
                 Content = questionPostRequest.Content,
-                UserId = "1",
-                UserName = "bob.test@test.com",
+                UserId = User.FindFirst(ClaimTypes.NameIdentifier).Value,
+                UserName = await GetUserName(),
                 Created = DateTime.UtcNow
             });
 
@@ -134,14 +144,34 @@ namespace QandA.Controllers
             {
                 QuestionId = answerPostRequest.QuestionId.Value,
                 Content = answerPostRequest.Content,
-                UserId = "1",
-                UserName = "bob.test@test.com",
+                UserId = User.FindFirst(ClaimTypes.NameIdentifier).Value,
+                UserName = await GetUserName(),
                 Created = DateTime.UtcNow
             });
 
             _questionCache.Remove(answerPostRequest.QuestionId.Value);
 
             return Ok(savedAnswer);
+        }
+
+        private async Task<string?> GetUserName()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, _auth0UserInfo);
+            request.Headers.Add("Authorization", Request.Headers["Authorization"].First());
+
+            var client = _httpClientFactory.CreateClient();
+            var response = await client.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+                return "";
+
+            var jsonContent = await response.Content.ReadAsStringAsync();
+            var user = JsonSerializer.Deserialize<User>(jsonContent, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            return user.Name;
         }
     }
 }

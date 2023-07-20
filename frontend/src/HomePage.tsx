@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from './Redux/Hooks';
 import {
   gettingUnansweredQuestions,
   gotUnansweredQuestions,
-} from './Redux/Reducers';
+} from './Redux/Slice';
 
 export const HomePage = () => {
   const dispatch = useAppDispatch();

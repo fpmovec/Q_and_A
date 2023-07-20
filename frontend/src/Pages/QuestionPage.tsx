@@ -19,7 +19,7 @@ import {
 import { AnswerList } from '../AnswerComponents/AnswerList';
 import { useForm } from 'react-hook-form';
 import { useAppDispatch, useAppSelector } from '../Redux/Hooks';
-import { gettingQuestion, gotQuestion } from '../Redux/Reducers';
+import { gettingQuestion, gotQuestion } from '../Redux/Slice';
 
 type FormData = {
   content: string;

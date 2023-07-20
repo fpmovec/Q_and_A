@@ -5,7 +5,7 @@ import { Page } from '../Page/Page';
 import { useSearchParams } from 'react-router-dom';
 import { QuestionList } from '../QuestionComponents/QuestionsList';
 import { searchQuestions } from '../MockData/QuestionsFunctions';
-import { searchedQuestions, searchingQuestions } from '../Redux/Reducers';
+import { searchedQuestions, searchingQuestions } from '../Redux/Slice';
 import { useAppDispatch, useAppSelector } from '../Redux/Hooks';
 
 export const SearchPage = () => {
