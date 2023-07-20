@@ -4,8 +4,17 @@ import { questions } from './FakeQuestions';
 import { PostQuestionData } from './QuestionsData';
 
 export const getUnansweredQuestions = async (): Promise<QuestionData[]> => {
-  await wait(500);
-  return questions.filter((q) => q.answers.length === 0);
+  let unansweredQuestions: QuestionData[] = [];
+
+  const response = await fetch(
+    'https://localhost:7175/api/questions/unanswered',
+  );
+  //console.log(await response.json());
+  unansweredQuestions = await response.json();
+  return unansweredQuestions.map((question) => ({
+    ...question,
+    created: new Date(question.created),
+  }));
 };
 
 const wait = (ms: number): Promise<void> => {
